@@ -1,0 +1,17 @@
+Material My Material : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        DiffuseMap : Textures/Building/Texture_diffuse.png
+        LightMap : Textures/Building/Ambient_Occlusion_only.png
+        NormalMap : Textures/Building/Texture_normals.png
+        Specular : 1 1 1 1
+        Diffuse : 1.0 1.0 0.7 1.0
+        Ambient : 0.4 0.4 0.4 1.0
+        FilterMode : 0
+        Shininess : 20.0
+        ShadowIntensity : 1.0
+        UseVertexColor : false
+     }
+    AdditionalRenderState {
+      FaceCull Back
+    }
+}
