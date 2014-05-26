@@ -54,7 +54,7 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
         BitmapText hudText = new BitmapText(guiFont, false);
         hudText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
         hudText.setColor(ColorRGBA.Blue);                             // font color            // the text
-        hudText.setLocalTranslation(10, viewPort.getCamera().getHeight() - (hudText.getLineHeight() * 2), 0); // position
+        hudText.setLocalTranslation(10, viewPort.getCamera().getHeight() - (hudText.getLineHeight() * 3), 0); // position
         guiNode.attachChild(hudText);
         wayPointSystem = new WayPointSystem(this, hudText);
         wayPointSystem.load();
@@ -98,6 +98,13 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
         hudText2.setText("Press F2 to restart the Game");             // the text
         hudText2.setLocalTranslation(10, viewPort.getCamera().getHeight() - hudText.getLineHeight(), 0); // position
         guiNode.attachChild(hudText2);
+
+        BitmapText hudText3 = new BitmapText(guiFont, false);
+        hudText3.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        hudText3.setColor(ColorRGBA.Blue);                             // font color
+        hudText3.setText("Use the arrow keys to steer the airplane");             // the text
+        hudText3.setLocalTranslation(10, viewPort.getCamera().getHeight() - (2 * hudText.getLineHeight()), 0); // position
+        guiNode.attachChild(hudText3);
     }
 
 

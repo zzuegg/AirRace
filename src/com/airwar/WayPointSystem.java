@@ -56,6 +56,7 @@ public class WayPointSystem {
     ArrayList<Spatial> waypointAvailable = new ArrayList<>();
     BitmapText bitmapText;
     AudioNode chime;
+    AudioNode winner;
 
     public WayPointSystem(SimpleApplication simpleApplication, BitmapText bitmapText) {
         this.simpleApplication = simpleApplication;
@@ -67,6 +68,10 @@ public class WayPointSystem {
         chime = new AudioNode(simpleApplication.getAssetManager().loadAudio("Sounds/converted/chime.ogg"), new AudioKey());
         chime.setPositional(false);
         simpleApplication.getRootNode().attachChild(chime);
+
+        winner = new AudioNode(simpleApplication.getAssetManager().loadAudio("Sounds/converted/winner.ogg"), new AudioKey());
+        winner.setPositional(false);
+        simpleApplication.getRootNode().attachChild(winner);
     }
 
     public void load() {
@@ -111,6 +116,9 @@ public class WayPointSystem {
         waypointAvailable.remove(waypoint);
         updateText();
         chime.playInstance();
+        if (waypointAvailable.size() == 0) {
+            winner.playInstance();
+        }
     }
 
     public void switchMode() {

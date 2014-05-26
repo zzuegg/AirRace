@@ -97,7 +97,7 @@ public class Airplane implements ActionListener {
         if (enabled) {
             if (down) {
                 airplane.rotate(new Quaternion().fromAngleAxis(-1 * tpf, Vector3f.UNIT_X));
-                hAngle = hAngle - 1 * tpf;
+                hAngle = hAngle - 0.7f * tpf;
             }
             if (up) {
                 airplane.rotate(new Quaternion().fromAngleAxis(1 * tpf, Vector3f.UNIT_X));
