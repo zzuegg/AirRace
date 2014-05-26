@@ -60,7 +60,8 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
         wayPointSystem.load();
 
         getInputManager().addMapping("Reset", new KeyTrigger(KeyInput.KEY_F2));
-        getInputManager().addListener(this, "Reset");
+        getInputManager().addMapping("SwitchMode", new KeyTrigger(KeyInput.KEY_F3));
+        getInputManager().addListener(this, "Reset", "SwitchMode");
       /*  System.out.println("init");
         Spatial world = assetManager.loadModel("Scenes/SceneWithBuilding.j3o");
         world.setLocalScale(10, 4, 10);
@@ -129,6 +130,13 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
     public void onAction(String s, boolean b, float v) {
         if (s.equals("Reset")) {
             if (b) {
+                airplane.reset();
+                wayPointSystem.reset();
+            }
+        }
+        if (s.equals("SwitchMode")) {
+            if (b) {
+                wayPointSystem.switchMode();
                 airplane.reset();
                 wayPointSystem.reset();
             }

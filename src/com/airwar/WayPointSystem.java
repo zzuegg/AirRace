@@ -1,16 +1,16 @@
 package com.airwar;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioKey;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.font.BitmapText;
-import com.jme3.material.Material;
+import com.jme3.light.AmbientLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 
 /**
@@ -55,6 +55,7 @@ public class WayPointSystem {
     SimpleApplication simpleApplication;
     ArrayList<Spatial> waypointAvailable = new ArrayList<>();
     BitmapText bitmapText;
+    AudioNode chime;
 
     public WayPointSystem(SimpleApplication simpleApplication, BitmapText bitmapText) {
         this.simpleApplication = simpleApplication;
@@ -63,6 +64,9 @@ public class WayPointSystem {
 
     public void updateText() {
         bitmapText.setText("Collected " + (waypoints.size() - waypointAvailable.size() + " of " + waypoints.size()));
+        chime = new AudioNode(simpleApplication.getAssetManager().loadAudio("Sounds/converted/chime.ogg"), new AudioKey());
+        chime.setPositional(false);
+        simpleApplication.getRootNode().attachChild(chime);
     }
 
     public void load() {
@@ -77,11 +81,17 @@ public class WayPointSystem {
             simpleApplication.getStateManager().getState(BulletAppState.class).getPhysicsSpace().remove(spatial.getControl(RigidBodyControl.class));
         }
         waypointAvailable.clear();
-        Material waypointMat = new Material(simpleApplication.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        waypointMat.setColor("Color", ColorRGBA.Blue);
+        //Material waypointMat = new Material(simpleApplication.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        //waypointMat.setColor("Color", ColorRGBA.Blue);
         for (Vector3f waypoint : waypoints) {
-            Geometry geometry = new Geometry("WayPoint", new Sphere(4, 4, 4f));
-            geometry.setMaterial(waypointMat);
+            //Geometry geometry = new Geometry("WayPoint", new Sphere(4, 4, 4f));
+            //geometry.setMaterial(waypointMat);
+            Spatial geometry = simpleApplication.getAssetManager().loadModel("Models/coin.j3o");
+            AmbientLight ambientLight = new AmbientLight();
+            ambientLight.setColor(ColorRGBA.White);
+            geometry.addLight(ambientLight);
+            geometry.addControl(new CoinControl());
+            geometry.setLocalScale(3);
             RigidBodyControl rigidBodyControl = new RigidBodyControl(CollisionShapeFactory.createBoxShape(geometry));
             geometry.addControl(rigidBodyControl);
             rigidBodyControl.setMass(0);
@@ -100,5 +110,10 @@ public class WayPointSystem {
         waypoint.removeFromParent();
         waypointAvailable.remove(waypoint);
         updateText();
+        chime.playInstance();
+    }
+
+    public void switchMode() {
+
     }
 }

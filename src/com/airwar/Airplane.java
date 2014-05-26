@@ -138,6 +138,9 @@ public class Airplane implements ActionListener {
                 enginePitch = Math.max(enginePitch - 0.5f * tpf, 0.9f);
             }
             engineAudio.setPitch(enginePitch);
+            if (model.getWorldTranslation().y <= 0) {
+                onCrash();
+            }
         }
     }
 
@@ -164,12 +167,16 @@ public class Airplane implements ActionListener {
 
     }
 
-
-    public void collideWith(Spatial nodeB) {
+    private void onCrash() {
         if (enabled) {
             enabled = false;
             explosionAudio.playInstance();
             engineAudio.stop();
         }
+    }
+
+
+    public void collideWith(Spatial nodeB) {
+        onCrash();
     }
 }
