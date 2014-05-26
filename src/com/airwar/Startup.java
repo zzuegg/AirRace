@@ -4,11 +4,16 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.font.BitmapText;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.ColorRGBA;
 
 /**
  * Created by Zuegg on 26.05.2014.
  */
-public class Startup extends SimpleApplication implements PhysicsCollisionListener {
+public class Startup extends SimpleApplication implements PhysicsCollisionListener, ActionListener {
     public static void main(String args[]) {
         Startup startup = new Startup();
         startup.start();
@@ -22,6 +27,8 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
     Airplane airplane;
 
     BulletAppState bulletAppState;
+
+    WayPointSystem wayPointSystem;
 
     @Override
     public void simpleInitApp() {
@@ -44,6 +51,16 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
         flyCam.setMoveSpeed(100f);
         cam.setFrustumFar(2000);
 
+        BitmapText hudText = new BitmapText(guiFont, false);
+        hudText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        hudText.setColor(ColorRGBA.Blue);                             // font color            // the text
+        hudText.setLocalTranslation(10, viewPort.getCamera().getHeight() - (hudText.getLineHeight() * 2), 0); // position
+        guiNode.attachChild(hudText);
+        wayPointSystem = new WayPointSystem(this, hudText);
+        wayPointSystem.load();
+
+        getInputManager().addMapping("Reset", new KeyTrigger(KeyInput.KEY_F2));
+        getInputManager().addListener(this, "Reset");
       /*  System.out.println("init");
         Spatial world = assetManager.loadModel("Scenes/SceneWithBuilding.j3o");
         world.setLocalScale(10, 4, 10);
@@ -73,6 +90,13 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
 
         planeNode.attachChild(audioNode);
         audioNode.play();*/
+
+        BitmapText hudText2 = new BitmapText(guiFont, false);
+        hudText2.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        hudText2.setColor(ColorRGBA.Blue);                             // font color
+        hudText2.setText("Press F2 to restart the Game");             // the text
+        hudText2.setLocalTranslation(10, viewPort.getCamera().getHeight() - hudText.getLineHeight(), 0); // position
+        guiNode.attachChild(hudText2);
     }
 
 
@@ -84,12 +108,30 @@ public class Startup extends SimpleApplication implements PhysicsCollisionListen
 
     @Override
     public void collision(PhysicsCollisionEvent physicsCollisionEvent) {
-        System.out.println("Collision between: " + physicsCollisionEvent.getNodeA().getName() + ":" + physicsCollisionEvent.getNodeB().getName());
-        if(physicsCollisionEvent.getNodeA().getName().equals("Airplane")){
-            airplane.collideWith(physicsCollisionEvent.getNodeB());
+        // System.out.println("Collision between: " + physicsCollisionEvent.getNodeA().getName() + ":" + physicsCollisionEvent.getNodeB().getName());
+        if (physicsCollisionEvent.getNodeA().getName().equals("Airplane")) {
+            if (physicsCollisionEvent.getNodeB().getName().equals("Building")) {
+                airplane.collideWith(physicsCollisionEvent.getNodeB());
+            } else if (physicsCollisionEvent.getNodeB().getName().equals("Waypoint")) {
+                wayPointSystem.removeWaypoint(physicsCollisionEvent.getNodeB());
+            }
         }
-        if(physicsCollisionEvent.getNodeB().getName().equals("Airplane")){
-            airplane.collideWith(physicsCollisionEvent.getNodeA());
+        if (physicsCollisionEvent.getNodeB().getName().equals("Airplane")) {
+            if (physicsCollisionEvent.getNodeA().getName().equals("Building")) {
+                airplane.collideWith(physicsCollisionEvent.getNodeA());
+            } else if (physicsCollisionEvent.getNodeA().getName().equals("Waypoint")) {
+                wayPointSystem.removeWaypoint(physicsCollisionEvent.getNodeA());
+            }
+        }
+    }
+
+    @Override
+    public void onAction(String s, boolean b, float v) {
+        if (s.equals("Reset")) {
+            if (b) {
+                airplane.reset();
+                wayPointSystem.reset();
+            }
         }
     }
 }

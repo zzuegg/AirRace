@@ -48,6 +48,8 @@ public class Airplane implements ActionListener {
     public void reset() {
         model.setLocalTranslation(startPos);
         model.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
+        flightDirection = new Vector3f(0, 0.5f, 1);
+        airplane.setLocalRotation(new Quaternion());
         enabled = true;
         engineAudio.play();
     }
@@ -70,7 +72,8 @@ public class Airplane implements ActionListener {
         simpleApplication.getInputManager().addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
         simpleApplication.getInputManager().addMapping("Up", new KeyTrigger(KeyInput.KEY_UP));
         simpleApplication.getInputManager().addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
-        simpleApplication.getInputManager().addListener(this, "Left", "Right", "Up", "Down");
+        simpleApplication.getInputManager().addMapping("DBG", new KeyTrigger(KeyInput.KEY_SPACE));
+        simpleApplication.getInputManager().addListener(this, "Left", "Right", "Up", "Down", "DBG");
 
         engineAudio = new AudioNode(simpleApplication.getAssetManager().loadAudio("Sounds/converted/propeller.ogg"), new AudioKey());
         engineAudio.setPositional(false);
@@ -152,12 +155,18 @@ public class Airplane implements ActionListener {
         if (s.equals("Right")) {
             right = keyPressed;
         }
+
+        if (s.equals("DBG")) {
+            if (keyPressed) {
+                System.out.println("waypoints.add(new Vector3f(" + simpleApplication.getCamera().getLocation().x + "f," + simpleApplication.getCamera().getLocation().y + "f," + simpleApplication.getCamera().getLocation().z + "f));");
+            }
+        }
+
     }
 
 
     public void collideWith(Spatial nodeB) {
-
-        if(enabled) {
+        if (enabled) {
             enabled = false;
             explosionAudio.playInstance();
             engineAudio.stop();
